@@ -49,4 +49,23 @@ class RegisterTest extends TestCase
             'password'
         ]);
     }
+
+    public function test_user_register_with_duplicate_email () {
+        User::factory()->create([
+            'email' => 'johndoe@gmail.com'
+        ]);
+
+        $response = $this->postJson('/api/register', [
+            'f_name' => 'John',
+            'l_name' => 'Doe',
+            'email' => 'johndoe@gmail.com',
+            'password' => '123456'
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJsonValidationErrors([
+            'email'
+        ]);
+    }
 }
