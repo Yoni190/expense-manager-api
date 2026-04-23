@@ -9,6 +9,7 @@ use App\Models\User;
 
 class RegisterTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * A basic feature test example.
      */
@@ -33,6 +34,19 @@ class RegisterTest extends TestCase
                  ]);
         $this->assertDatabaseHas('users', [
             'email' => 'johndoe@gmail.com'
+        ]);
+    }
+
+    public function test_user_register_with_missing_fields () {
+        $response = $this->postJson('/api/register', []);
+
+        $response->assertStatus(422);
+
+        $response->assertJsonValidationErrors([
+            'f_name',
+            'l_name',
+            'email',
+            'password'
         ]);
     }
 }
