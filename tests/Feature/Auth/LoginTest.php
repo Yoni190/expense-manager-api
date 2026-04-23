@@ -25,4 +25,18 @@ class LoginTest extends TestCase
         $response->assertStatus(200)
                  ->assertJsonStructure(['token']);
     }
+
+    public function test_user_login_with_missing_fields () {
+        User::factory()->create([
+            'email' => 'johndoe@gmail.com',
+            'password' => '123456'
+        ]);
+
+        $response = $this->postJson('api/login', []);
+
+        $response->assertStatus(422);
+
+        $response->assertJsonValidationErrors(['email', 'password']);
+        
+    }
 }
