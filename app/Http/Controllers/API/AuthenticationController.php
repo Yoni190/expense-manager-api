@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class AuthenticationController extends Controller
@@ -25,5 +26,19 @@ class AuthenticationController extends Controller
         ]);
 
         return response()->json([ 'message' => 'User registered successfully' ]);
+    }
+
+    public function login(Request $request) {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ]);
+
+        if(!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([ 'message' => 'Invalid Credentials' ], 401);
+        }
+
+        $token = Auth::user()->createToken('API Token')->plainTextToken;
+        return response()->json([ 'token' => $token ]);
     }
 }
