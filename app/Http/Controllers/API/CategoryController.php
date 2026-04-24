@@ -46,4 +46,14 @@ class CategoryController extends Controller
 
         return response()->json([ 'message' => 'Category Updated', 'data' => $category ]);
     }
+
+    public function destroy(Request $request, Category $category) {
+        if($category->user_id !== $request->user()->id) {
+            return response()->json([ 'message' => 'Forbidden' ], 403);
+        }
+
+        $category->delete();
+
+        return response()->json([ 'message' => 'Category Deleted' ]);
+    }
 }
