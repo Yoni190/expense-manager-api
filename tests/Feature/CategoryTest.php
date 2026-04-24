@@ -63,4 +63,14 @@ class CategoryTest extends TestCase
 
         $response->assertStatus(422);
     }
+
+    public function test_unauthenticated_user_cannot_create_categories () {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('/api/categories', [
+            'name' => 'Shopping'
+        ]);
+
+        $response->assertStatus(401);
+    }
 }
