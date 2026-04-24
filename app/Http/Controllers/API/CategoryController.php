@@ -16,4 +16,18 @@ class CategoryController extends Controller
             'data' => $categories
         ], 200);
     }
+
+    public function store(Request $request) {
+        $validated = $request->validate([
+            'name' => 'required|string|min:2|max:255|unique:categories'
+        ]);
+
+        $category = $request->user()->categories()->create($validated);
+
+        return response()->json([
+            'message' => 'Category created successfully',
+            'data' => $category
+        ], 201);
+
+    }
 }
