@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Category;
 
 class CategoryController extends Controller
 {
@@ -29,5 +30,20 @@ class CategoryController extends Controller
             'data' => $category
         ], 201);
 
+    }
+
+    public function update(Request $request, Category $category) {
+
+        if($category->user_id !== $request->user()->id) {
+            return response()->json([ 'message' => 'Forbidden'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|min:2|max:255|unique:categories'
+        ]);
+
+        $category->update($validated);
+
+        return response()->json([ 'message' => 'Category Updated', 'data' => $category ]);
     }
 }
