@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -20,8 +21,14 @@ class CategoryController extends Controller
 
     public function store(Request $request) {
         $validated = $request->validate([
-            'name' => 'required|string|min:2|max:255|unique:categories'
-        ]);
+            'name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:255',
+                Rule::unique('categories')->where('user_id', auth()->id())
+            ]
+            ]);
 
         $category = $request->user()->categories()->create($validated);
 
