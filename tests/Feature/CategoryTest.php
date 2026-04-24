@@ -133,4 +133,19 @@ class CategoryTest extends TestCase
             'id' => $category->id
         ]);
     }
+
+    public function test_user_cannot_delete_others_categories () {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $category = Category::factory()->create([
+            'user_id' => $otherUser->id
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->delete("/api/categories/{$category->id}");
+
+        $response->assertStatus(403);
+    }
 }
