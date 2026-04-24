@@ -24,6 +24,13 @@ class CategoryTest extends TestCase
         $response = $this->getJson('/api/categories');
 
         $response->assertStatus(200);
+    }
 
+    public function test_unauthenticated_user_cannot_access_categories () {
+        $user = User::factory()->create();
+
+        $response = $this->getJson('/api/categories');
+
+        $response->assertStatus(401);
     }
 }
