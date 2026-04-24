@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use App\Models\Category;
 
 class CategoryTest extends TestCase
 {
@@ -72,5 +73,28 @@ class CategoryTest extends TestCase
         ]);
 
         $response->assertStatus(401);
+    }
+
+    public function test_user_can_edit_categories () {
+        $user = User::factory()->create();
+
+        $category = Category::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Shopping'
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->putJson("/api/categories/{$category->id}", [
+            'name' => 'Transportation'
+        ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('categories', [
+            'id' => $category->id,
+            'name' => 'Transportation',
+            'user_id' => $user->id
+        ]);
     }
 }
