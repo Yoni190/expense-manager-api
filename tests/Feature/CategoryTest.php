@@ -33,4 +33,20 @@ class CategoryTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    public function test_user_can_create_categories () {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $response = $this->postJson('/api/categories', [
+            'name' => 'Shopping'
+        ]);
+
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Shopping'
+        ]);
+    }
 }
