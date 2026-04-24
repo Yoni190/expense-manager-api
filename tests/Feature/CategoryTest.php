@@ -115,4 +115,22 @@ class CategoryTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    public function test_user_can_delete_categories () {
+        $user = User::factory()->create();
+
+        $category = Category::factory()->create([
+            'user_id' => $user->id
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->delete("/api/categories/{$category->id}");
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('categories', [
+            'id' => $category->id
+        ]);
+    }
 }
