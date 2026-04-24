@@ -49,4 +49,18 @@ class CategoryTest extends TestCase
             'name' => 'Shopping'
         ]);
     }
+
+    public function test_user_cannot_create_duplicate_categories () {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $user->categories()->create(['name' => 'Shopping']);
+
+        $response = $this->postJson('/api/categories', [
+            'name' => 'Shopping'
+        ]);
+
+        $response->assertStatus(422);
+    }
 }
