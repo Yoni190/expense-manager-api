@@ -46,8 +46,14 @@ class CategoryController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|min:2|max:255|unique:categories'
-        ]);
+            'name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:255',
+                Rule::unique('categories')->where('user_id', auth()->id())
+            ]
+            ]);
 
         $category->update($validated);
 
