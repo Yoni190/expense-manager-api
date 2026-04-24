@@ -97,4 +97,22 @@ class CategoryTest extends TestCase
             'user_id' => $user->id
         ]);
     }
+
+    public function test_user_cannot_edit_others_category () {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $category = Category::factory()->create([
+            'user_id' => $otherUser->id,
+            'name' => 'Shopping'
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->putJson("/api/categories/{$category->id}", [
+            'name' => 'Transportation'
+        ]);
+
+        $response->assertStatus(403);
+    }
 }
